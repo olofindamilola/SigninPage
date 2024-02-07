@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Auth app</title>
+</head>
+<body>
+    <button id="signInButton">Create Account / sign In</button>
+    <button id="signOutButton">sign Out</button>
+
+    <div id="message">
+        <p>You have signed in</p>
+    </div>
+    <div id="message">
+        <p>You have signed in as <span id="userName"></span>with the emial <span id="userEmail"></span></p>
+    </div>
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        // TODO: Add SDKs for Firebase products that you want to use
+        // https://firebase.google.com/docs/web/setup#available-libraries
+        import { getAuth, GoogleAuthProvider, signOut, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+        
+        // Your web app's Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyAP2mOQDN0P1lFiIzSVM90hHAuqvHwRoG0",
+          authDomain: "auth-100e8.firebaseapp.com",
+          projectId: "auth-100e8",
+          storageBucket: "auth-100e8.appspot.com",
+          messagingSenderId: "110066054826",
+          appId: "1:110066054826:web:73e7cdc35c0733a0fd82d3"
+        };
+      
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth();
+        const provider = new GoogleAuthProvider();
+
+        const signInButton = document.getElementById("signInButton");
+        const signOutButton = document.getElementById("signOutButton");
+        const message = document.getElementById("message");
+        const userName = document.getElementById("userName");
+        const UserEmail = document.getElementById("userEmail");
+
+        signOutButton.style.display = "none";
+        message.style.display = "none";
+
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                signOutButton.style.display = "block";
+                message.style.display = "block";
+                userName.innerHTML = "Name: " + user.displayName;
+                userEmail.innerHTML = "Email: " + user.email;
+            } else {
+                signOutButton.style.display = "none";
+                message.style.display = "none";
+            }
+        });
+
+        const userSignIn = async () => {
+            try {
+                const result = await signInWithPopup(auth, provider);
+                const user = result.user;
+                console.log(user);
+            } catch(error) {
+                const errorCode = error.code;
+                const errorMessage = error.message;
+                console.error(errorCode, errorMessage);
+            }
+        };
+
+        const userSignOut = async () => {
+            signOut(auth).then(()=>{
+                alert("You have signed out successfully")
+            }).catch((error)=>{
+                console.error("Sign out error" , error);
+            });
+        };
+
+        signInButton.addEventListener('click', userSignIn);
+        signOutButton.addEventListener('click', userSignOut);
+      </script>
+</body>
+</html>
